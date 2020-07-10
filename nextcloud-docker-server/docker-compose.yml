@@ -1,0 +1,51 @@
+version: '3.3'
+
+services:
+  db:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    ports: 
+      - 3306:3306
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=nextcloudRoot1234!
+      - MYSQL_PASSWORD=nextcloud1234!
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    networks:
+      - nextcloud
+
+  app:
+    image: nextcloud
+    ports:
+      - 8002:80
+    links:
+      - db
+    volumes:
+      - ./nextcloud:/var/www/html
+    restart: always
+    environment:
+      - TZ=Aisa/Shanghai
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=nextcloud1234!
+      - MYSQL_HOST=db
+      - NEXTCLOUD_ADMIN_USER=nextcloud
+      - NEXTCLOUD_ADMIN_PASSWORD=nextcloud
+    networks:
+      - nextcloud
+
+  onlyoffice:
+    hostname: onlyoffice
+    image: onlyoffice/documentserver
+    restart: always
+    ports:
+      - 8001:80
+    networks:
+      - nextcloud
+
+networks:
+  nextcloud:
+    driver: 'bridge'

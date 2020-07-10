@@ -1,0 +1,5 @@
+version: "3.8"
+services:
+  web:
+    image: hello-world
+    restart: always
